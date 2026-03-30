@@ -1,9 +1,12 @@
-import React from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState } from 'react';
 import { Head, useForm, Link, router, usePage } from '@inertiajs/react';
-import { Plus, Layout, Clock, User, ArrowRight, Zap, Target, Shield, LogOut, FileText } from 'lucide-react';
-
+import {
+    Plus, Layout, Clock, User, ArrowRight, Zap,
+    Target, Shield, LogOut, FileText, Sun, Moon,
+    LayoutDashboard, Folder, Settings, TrendingUp
+} from 'lucide-react';
 import { PageProps } from '@inertiajs/core';
+import { useTheme } from '../hooks/useTheme';
 
 interface Project {
     id: string;
@@ -33,221 +36,301 @@ interface Props extends PageProps {
     };
 }
 
+function StatusBadge({ status }: { status: string }) {
+    const map: Record<string, string> = {
+        planning:  'badge badge-default',
+        completed: 'badge badge-success',
+        error:     'badge badge-destructive',
+    };
+    return (
+        <span className={map[status] || 'badge badge-secondary'}>
+            {status}
+        </span>
+    );
+}
 
 export default function Dashboard({ projects }: Props) {
     const { data, setData, post, processing, errors, reset } = useForm({
         brief: '',
         client_name: '',
     });
+    const { isDark, toggleTheme } = useTheme();
+    const { auth } = usePage<Props>().props;
+    const firstName = auth.user.name.split(' ')[0];
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('projects.store'), {
-            onSuccess: () => reset(),
-        });
+        post(route('projects.store'), { onSuccess: () => reset() });
     };
 
+    const stats = [
+        { label: 'Total Projects', value: projects.length, icon: Folder },
+        {
+            label: 'Active',
+            value: projects.filter(p => p.status === 'planning').length,
+            icon: TrendingUp,
+        },
+        {
+            label: 'Completed',
+            value: projects.filter(p => p.status === 'completed').length,
+            icon: Shield,
+        },
+    ];
+
     return (
-        <div className="min-h-screen bg-[#0f0c13] text-white selection:bg-[#F93A8B]/30">
-            <Head title="Architect Dashboard" />
-            <style dangerouslySetInnerHTML={{ __html: `
-                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-                h1, h2, h3, h4, h5, h6, .font-outfit { font-family: 'Outfit', sans-serif !important; }
-                body { font-family: 'Space Grotesk', sans-serif; }
-            ` }} />
+        <div className="min-h-screen bg-background text-foreground flex">
+            <Head title="Dashboard" />
 
-            {/* Sidebar / Navigation */}
-            <div className="fixed left-0 top-0 h-full w-20 flex flex-col items-center py-8 border-r border-[#261E2E] bg-[#15121a]/50 backdrop-blur-xl z-50">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#F93A8B] to-[#F3B323] flex items-center justify-center mb-12 shadow-lg shadow-[#F93A8B]/20">
-                    <Zap className="text-white w-6 h-6" />
+            {/* ── Sidebar ─────────────────────────────── */}
+            <aside className="fixed left-0 top-0 h-full w-[220px] sidebar z-50 flex flex-col py-4 px-3">
+                {/* Logo */}
+                <div className="flex items-center gap-2.5 px-3 py-2 mb-6">
+                    <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ background: 'hsl(var(--primary))' }}
+                    >
+                        <Zap className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-bold text-sm text-foreground tracking-tight">
+                        Archite<span className="text-primary">X</span>
+                    </span>
                 </div>
-                <div className="space-y-8 flex-1">
-                    <button className="p-3 rounded-xl bg-[#F93A8B]/10 text-[#F93A8B] border border-[#F93A8B]/20 shadow-inner shadow-[#F93A8B]/10">
-                        <Layout className="w-6 h-6" />
-                    </button>
-                    <button className="p-3 rounded-xl text-zinc-500 hover:text-zinc-200 transition-colors">
-                        <User className="w-6 h-6" />
-                    </button>
-                </div>
-                
-                <button 
-                    onClick={() => router.post(route('logout'))}
-                    className="p-3 rounded-xl text-rose-500/50 hover:text-rose-500 hover:bg-rose-500/10 transition-all mb-4"
-                >
-                    <LogOut className="w-6 h-6" />
-                </button>
-            </div>
 
-            <main className="pl-20 min-h-screen flex">
-                {/* Left Content Column */}
-                <div className="flex-1 p-12 max-w-5xl mx-auto">
-                    <header className="mb-12 animate-fade-in">
-                        <h1 className="text-4xl font-extrabold tracking-tight mb-2">
-                            Hello, <span className="gradient-text">{usePage<Props>().props.auth.user.name.split(' ')[0]}</span>
-                        </h1>
-                        <p className="text-zinc-400 text-lg">Welcome to ArchiteX. Start a new project or manage your existing blueprints.</p>
-                    </header>
+                {/* Nav */}
+                <nav className="flex-1 space-y-0.5">
+                    <button className="sidebar-nav-item active">
+                        <LayoutDashboard className="w-4 h-4 shrink-0" />
+                        Dashboard
+                    </button>
+                    <button className="sidebar-nav-item">
+                        <Folder className="w-4 h-4 shrink-0" />
+                        Projects
+                    </button>
+                    <button className="sidebar-nav-item">
+                        <User className="w-4 h-4 shrink-0" />
+                        Profile
+                    </button>
+                    <button className="sidebar-nav-item">
+                        <Settings className="w-4 h-4 shrink-0" />
+                        Settings
+                    </button>
+                </nav>
+
+                {/* Bottom: user + theme */}
+                <div className="space-y-1 border-t border-border pt-3 mt-3">
+                    <div className="flex items-center gap-2.5 px-3 py-2">
+                        <div
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                            style={{ background: 'hsl(var(--primary))' }}
+                        >
+                            {firstName[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-foreground truncate">{auth.user.name}</p>
+                            <p className="text-[11px] text-muted-foreground truncate">{auth.user.email}</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 px-1">
+                        <button
+                            onClick={toggleTheme}
+                            className="sidebar-nav-item flex-1 text-xs"
+                        >
+                            {isDark
+                                ? <><Sun className="w-4 h-4" /> Light mode</>
+                                : <><Moon className="w-4 h-4" /> Dark mode</>
+                            }
+                        </button>
+                        <button
+                            onClick={() => router.post(route('logout'))}
+                            className="p-2 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            title="Sign out"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            {/* ── Main ────────────────────────────────── */}
+            <main className="flex-1 ml-[220px] min-h-screen">
+                {/* Top bar */}
+                <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-sm">
+                    <div className="flex items-center justify-between px-8 h-14">
+                        <div>
+                            <h1 className="text-sm font-semibold text-foreground">Dashboard</h1>
+                            <p className="text-xs text-muted-foreground">
+                                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="text-sm text-muted-foreground hidden sm:block">
+                                Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
+                                <span className="font-medium text-foreground">{firstName}</span>
+                            </span>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Content */}
+                <div className="px-8 py-8 max-w-5xl mx-auto space-y-8">
+
+                    {/* Stats row */}
+                    <div className="grid grid-cols-3 gap-4 animate-fade-in">
+                        {stats.map(({ label, value, icon: Icon }) => (
+                            <div key={label} className="card p-5">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
+                                    <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                                        <Icon className="w-4 h-4 text-primary" />
+                                    </div>
+                                </div>
+                                <div className="text-2xl font-bold text-foreground">{value}</div>
+                            </div>
+                        ))}
+                    </div>
 
                     {/* New Project Form */}
-                    <section className="mb-16 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                        <div className="glass p-8 rounded-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#F93A8B]/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:bg-[#F93A8B]/10 transition-colors duration-700"></div>
-                            
-                            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                                <Plus className="text-[#F93A8B] w-6 h-6" />
-                                Initiate New Project
-                            </h2>
+                    <section className="animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
+                        <div className="card card-accent p-6">
+                            <div className="flex items-center gap-2 mb-5">
+                                <Plus className="w-4 h-4 text-primary" />
+                                <h2 className="text-sm font-semibold text-foreground">New Project</h2>
+                            </div>
 
-                            <form onSubmit={submit} className="space-y-6 relative z-10">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-zinc-400 ml-1">Client Name</label>
+                            <form onSubmit={submit} className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="label" htmlFor="client_name">Client Name</label>
                                         <input
+                                            id="client_name"
                                             type="text"
                                             value={data.client_name}
                                             onChange={e => setData('client_name', e.target.value)}
                                             placeholder="e.g. Acme Corp"
-                                            className="w-full bg-[#1a1523] border-[#261E2E] rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#F93A8B]/40 focus:border-[#F93A8B]/50 outline-none transition-all placeholder:text-zinc-600"
+                                            className="input h-10"
                                         />
                                     </div>
                                     <div className="flex items-end">
-                                        <button 
+                                        <button
+                                            type="submit"
                                             disabled={processing}
-                                            className="btn-accent w-full justify-center h-[52px]"
+                                            className="btn btn-primary w-full h-10"
                                         >
-                                            {processing ? 'Processing Requirements...' : (
+                                            {processing ? (
+                                                <>
+                                                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                                                    </svg>
+                                                    Generating…
+                                                </>
+                                            ) : (
                                                 <>
                                                     Generate Blueprint
-                                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                                    <ArrowRight className="w-4 h-4" />
                                                 </>
                                             )}
                                         </button>
                                     </div>
                                 </div>
-                                
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center px-1">
-                                        <label className="text-sm font-semibold text-zinc-400">Project Brief & Requirements</label>
-                                        <span className="text-[10px] font-bold text-zinc-600 flex items-center gap-1">
-                                            <FileText className="w-2.5 h-2.5" />
-                                            Markdown Supported
+
+                                <div className="space-y-1.5">
+                                    <div className="flex items-center justify-between">
+                                        <label className="label" htmlFor="brief">Project Brief & Requirements</label>
+                                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                            <FileText className="w-3 h-3" />
+                                            Markdown supported
                                         </span>
                                     </div>
                                     <textarea
+                                        id="brief"
                                         required
                                         value={data.brief}
                                         onChange={e => setData('brief', e.target.value)}
-                                        placeholder="Describe goals, tech stack, and features. Markdown is supported and detailed briefs improve blueprint accuracy by 40%."
-                                        rows={6}
-                                        className="w-full bg-[#1a1523]/80 border-[#261E2E] rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#F93A8B]/40 focus:border-[#F93A8B]/50 outline-none transition-all placeholder:text-zinc-600 font-mono text-sm leading-relaxed min-h-[160px]"
-                                    ></textarea>
-                                    {errors.brief && <p className="text-rose-500 text-sm">{errors.brief}</p>}
+                                        placeholder="Describe goals, tech stack, and features…"
+                                        rows={5}
+                                        className="input min-h-[120px] resize-y font-mono text-sm leading-relaxed"
+                                    />
+                                    {errors.brief && (
+                                        <p className="text-xs text-destructive">{errors.brief}</p>
+                                    )}
                                 </div>
                             </form>
                         </div>
                     </section>
 
-                    {/* Projects Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    {/* Projects */}
+                    <section className="space-y-3 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-sm font-semibold text-foreground">Recent Projects</h2>
+                            <span className="text-xs text-muted-foreground">{projects.length} total</span>
+                        </div>
+
                         {projects.length === 0 ? (
-                            <div className="col-span-full py-20 text-center glass rounded-2xl border-dashed border-2 border-[#261E2E]">
-                                <p className="text-zinc-500 italic">No project blueprints found. initiate your first planning session above.</p>
+                            <div className="card p-12 text-center border-dashed">
+                                <Layout className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
+                                <p className="text-sm text-muted-foreground">No projects yet.</p>
+                                <p className="text-xs text-muted-foreground/60 mt-1">
+                                    Use the form above to generate your first blueprint.
+                                </p>
                             </div>
                         ) : (
-                            projects.map((project, idx) => (
-                                <Link 
-                                    key={project.id} 
-                                    href={route('projects.show', project.id)}
-                                    className="card p-6 flex flex-col group relative animate-fade-in-up hover:scale-[1.02]"
-                                    style={{ animationDelay: `${0.3 + (idx * 0.1)}s` }}
-                                >
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="p-2 rounded-lg bg-[#261E2E] group-hover:bg-[#F93A8B]/20 group-hover:text-[#F93A8B] transition-colors">
-                                            <Target className="w-5 h-5" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {projects.map((project, idx) => (
+                                    <Link
+                                        key={project.id}
+                                        href={route('projects.show', project.id)}
+                                        className="card p-5 flex flex-col group cursor-pointer animate-fade-in-up"
+                                        style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
+                                    >
+                                        {/* Header */}
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                                <Target className="w-4 h-4 text-primary" />
+                                            </div>
+                                            <StatusBadge status={project.status} />
                                         </div>
-                                        <span className={`px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
-                                            project.status === 'planning' ? 'bg-[#F3B323]/10 text-[#F3B323] border border-[#F3B323]/20' :
-                                            project.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                                            'bg-[#F93A8B]/10 text-[#F93A8B] border border-[#F93A8B]/20'
-                                        }`}>
-                                            {project.status}
-                                        </span>
-                                    </div>
 
-                                    <h3 className="text-xl font-bold mb-2 group-hover:text-[#F93A8B] transition-colors line-clamp-1">
-                                        {project.title}
-                                    </h3>
-                                    <p className="text-sm text-zinc-500 line-clamp-2 mb-6 flex-grow">
-                                        {project.brief}
-                                    </p>
+                                        {/* Title + brief */}
+                                        <h3 className="text-sm font-semibold text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-1">
+                                            {project.title}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground line-clamp-2 mb-4 flex-grow leading-relaxed">
+                                            {project.brief}
+                                        </p>
 
-                                    <div className="flex items-center gap-4 pt-6 border-t border-[#261E2E]/50 mt-auto">
-                                        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                                            <Clock className="w-3.5 h-3.5" />
-                                            {project.latest_estimate?.duration_weeks || 0}w
+                                        {/* Footer */}
+                                        <div className="flex items-center gap-4 pt-3 border-t border-border mt-auto">
+                                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                {project.latest_estimate?.duration_weeks ?? 0}w
+                                            </div>
+                                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                <Shield className="w-3.5 h-3.5" />
+                                                {project.latest_blueprint?.reliability_score ?? 0}%
+                                            </div>
+                                            <div className="ml-auto flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                                Open <ArrowRight className="w-3.5 h-3.5" />
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                                            <Shield className="w-3.5 h-3.5" />
-                                            {project.latest_blueprint?.reliability_score || 0}% Match
-                                        </div>
-                                        <div className="ml-auto flex items-center gap-1 text-[#F93A8B] font-bold text-sm">
-                                            Design
-                                            <ArrowRight className="w-4 h-4" />
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))
-                        )}
-                    </div>
-                </div>
-
-                {/* Right Infographic / Quick Stats */}
-                <div className="hidden xl:block w-96 border-l border-[#261E2E] bg-[#15121a]/30 p-12 overflow-y-auto">
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-zinc-500 mb-8">Architectural Intelligence</h4>
-                    
-                    <div className="space-y-12">
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-end">
-                                <span className="text-zinc-400 text-sm">Active Estimations</span>
-                                <span className="text-3xl font-bold text-white tracking-tight">{projects.length}</span>
-                            </div>
-                            <div className="h-1.5 bg-[#1a1523] rounded-full overflow-hidden">
-                                <div className="h-full bg-[#F93A8B] rounded-full w-2/3 shadow-[0_0_10px_rgba(249,58,139,0.5)]"></div>
-                            </div>
-                        </div>
-
-                        <div className="glass p-6 rounded-2xl relative">
-                            <Zap className="absolute top-4 right-4 text-[#F3B323]/20 w-12 h-12" />
-                            <h5 className="font-bold text-zinc-200 mb-4 flex items-center gap-2">
-                                <Zap className="w-4 h-4 text-[#F3B323]" />
-                                Quick Tip
-                            </h5>
-                            <p className="text-xs text-zinc-500 leading-relaxed">
-                                Detailed project briefs yield 40% more accurate blueprints. include specific libraries or infrastructure needs for best results.
-                            </p>
-                        </div>
-
-                        <div className="space-y-6">
-                            <h5 className="font-bold text-zinc-400 text-xs uppercase tracking-wider">Reliability Index</h5>
-                            <div className="space-y-6">
-                                {[
-                                    { label: 'Cloud Strategy', val: 92, color: 'bg-[#F93A8B]' },
-                                    { label: 'Security Posture', val: 88, color: 'bg-[#c033d6]' },
-                                    { label: 'Cost Efficiency', val: 74, color: 'bg-[#F3B323]' },
-                                ].map(stat => (
-                                    <div key={stat.label} className="space-y-2">
-                                        <div className="flex justify-between text-[10px] uppercase font-bold text-zinc-500">
-                                            <span>{stat.label}</span>
-                                            <span>{stat.val}%</span>
-                                        </div>
-                                        <div className="h-1 bg-[#1a1523] rounded-full overflow-hidden">
-                                            <div className={`h-full ${stat.color} rounded-full`} style={{ width: `${stat.val}%` }}></div>
-                                        </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
+                        )}
+                    </section>
+
+                    {/* Tips */}
+                    <aside className="card p-4 flex items-start gap-3 animate-fade-in-up bg-primary/5 border-primary/20" style={{ animationDelay: '0.15s' }}>
+                        <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <div>
+                            <p className="text-xs font-semibold text-foreground mb-0.5">Pro tip</p>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                                Detailed project briefs yield 40% more accurate blueprints. Include specific libraries or infrastructure requirements for best results.
+                            </p>
                         </div>
-                    </div>
+                    </aside>
+
                 </div>
             </main>
         </div>

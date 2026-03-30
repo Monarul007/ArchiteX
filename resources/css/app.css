@@ -1,151 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import 'tailwindcss';
 
 /* ============================================
-   ArchiteX Design System
+   ArchiteX Design System — shadcn-inspired
+   Pink accent · Light/Dark mode
    ============================================ */
 
 @theme {
-    --color-cyber-950: #0f0c13;
-    --color-cyber-900: #15121a;
-    --color-cyber-800: #1a1523;
-    --color-cyber-700: #261E2E;
-    --color-cyber-600: #3c2f4a;
-    --color-cyber-500: #F93A8B;
-    --color-cyber-400: #FA5c9e;
-    --color-cyber-300: #FC8cbb;
-    --color-cyber-accent: #c033d6;
-    --color-cyber-accent-light: #d64ced;
-    --color-cyber-danger: #f43f5e;
-    --color-cyber-success: #10b981;
-    --color-cyber-warning: #F3B323;
+    /* Accent — Pink (kept from original) */
+    --color-pink-50:  #fff0f7;
+    --color-pink-100: #ffe0f0;
+    --color-pink-200: #ffc0e0;
+    --color-pink-300: #ff8fc5;
+    --color-pink-400: #ff5ca8;
+    --color-pink-500: #F93A8B;
+    --color-pink-600: #e01f74;
+    --color-pink-700: #bc0f5e;
+    --color-pink-800: #981049;
+    --color-pink-900: #7d1240;
 
-    --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    /* Typography */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* ============================================
-   Base Styles
+   CSS Custom Properties (Light/Dark)
    ============================================ */
+
+:root {
+    color-scheme: light dark;
+
+    /* Background */
+    --background:        0 0% 100%;
+    --foreground:        240 10% 3.9%;
+
+    /* Card */
+    --card:              0 0% 100%;
+    --card-foreground:   240 10% 3.9%;
+
+    /* Popover */
+    --popover:           0 0% 100%;
+    --popover-foreground:240 10% 3.9%;
+
+    /* Primary */
+    --primary:           336 90% 59%;       /* Pink 500 */
+    --primary-foreground:0 0% 100%;
+
+    /* Secondary */
+    --secondary:         240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    /* Muted */
+    --muted:             240 4.8% 95.9%;
+    --muted-foreground:  240 3.8% 46.1%;
+
+    /* Accent */
+    --accent:            240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    /* Destructive */
+    --destructive:       0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Border & Input */
+    --border:            240 5.9% 90%;
+    --input:             240 5.9% 90%;
+    --ring:              336 90% 59%;
+
+    /* Radius */
+    --radius: 0.5rem;
+}
+
+.dark {
+    --background:        240 10% 3.9%;
+    --foreground:        0 0% 98%;
+
+    --card:              240 10% 3.9%;
+    --card-foreground:   0 0% 98%;
+
+    --popover:           240 10% 3.9%;
+    --popover-foreground:0 0% 98%;
+
+    --primary:           336 90% 59%;
+    --primary-foreground:0 0% 100%;
+
+    --secondary:         240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted:             240 3.7% 15.9%;
+    --muted-foreground:  240 5% 64.9%;
+
+    --accent:            240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive:       0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border:            240 3.7% 15.9%;
+    --input:             240 3.7% 15.9%;
+    --ring:              336 90% 59%;
+}
+
+/* ============================================
+   Base Reset & Typography
+   ============================================ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    border-color: hsl(var(--border));
+}
 
 body {
-    background: var(--color-cyber-950);
-    color: #e2e8f0;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================
-   Custom Scrollbar
+   Scrollbar
    ============================================ */
 
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--color-cyber-900);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--color-cyber-700);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--color-cyber-600);
-}
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: hsl(var(--border)); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)/0.4); }
 
 /* ============================================
-   Glass Morphism Utilities
+   Semantic color utility classes
    ============================================ */
 
-.glass {
-    background: rgba(19, 21, 37, 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(99, 102, 241, 0.1);
-}
+.bg-background      { background-color: hsl(var(--background)); }
+.bg-card            { background-color: hsl(var(--card)); }
+.bg-muted           { background-color: hsl(var(--muted)); }
+.bg-accent          { background-color: hsl(var(--accent)); }
+.bg-primary         { background-color: hsl(var(--primary)); }
+.bg-secondary       { background-color: hsl(var(--secondary)); }
+.bg-destructive     { background-color: hsl(var(--destructive)); }
 
-.glass-hover:hover {
-    background: rgba(19, 21, 37, 0.8);
-    border-color: rgba(99, 102, 241, 0.2);
-}
+.text-foreground    { color: hsl(var(--foreground)); }
+.text-card-foreground { color: hsl(var(--card-foreground)); }
+.text-muted-foreground { color: hsl(var(--muted-foreground)); }
+.text-primary       { color: hsl(var(--primary)); }
+.text-primary-foreground { color: hsl(var(--primary-foreground)); }
+.text-secondary-foreground { color: hsl(var(--secondary-foreground)); }
+.text-accent-foreground { color: hsl(var(--accent-foreground)); }
+.text-destructive   { color: hsl(var(--destructive)); }
 
-/* ============================================
-   Animations
-   ============================================ */
-
-@keyframes fade-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slide-in-right {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px rgba(249, 58, 139, 0.1); }
-    50% { box-shadow: 0 0 40px rgba(249, 58, 139, 0.2); }
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.4s ease-out;
-}
-
-.animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out;
-}
-
-.animate-slide-in-right {
-    animation: slide-in-right 0.4s ease-out;
-}
-
-.animate-pulse-glow {
-    animation: pulse-glow 3s ease-in-out infinite;
-}
-
-.animate-shimmer {
-    background: linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
-    background-size: 200% 100%;
-    animation: shimmer 2s linear infinite;
-}
+.border-border      { border-color: hsl(var(--border)); }
+.border-input       { border-color: hsl(var(--input)); }
 
 /* ============================================
-   Typography
+   Typography Helpers
    ============================================ */
 
 .gradient-text {
-    background: linear-gradient(135deg, #F93A8B, #c033d6, #F3B323);
+    background: linear-gradient(135deg, hsl(var(--primary)), #c033d6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 /* ============================================
-   Card & Surface Styles
+   shadcn-style Card
    ============================================ */
 
 .card {
-    background: var(--color-cyber-900);
-    border: 1px solid var(--color-cyber-700);
-    border-radius: 12px;
-    transition: all 0.2s ease;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .card:hover {
-    border-color: var(--color-cyber-600);
-    box-shadow: 0 4px 24px rgba(249, 58, 139, 0.15);
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 .card-accent {
@@ -156,109 +191,417 @@ body {
 .card-accent::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--color-cyber-accent), var(--color-cyber-500));
+    background: hsl(var(--primary));
+    border-radius: var(--radius) var(--radius) 0 0;
 }
 
 /* ============================================
-   Button Styles
+   Buttons — shadcn style
    ============================================ */
 
-.btn-primary {
+.btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--color-cyber-500);
-    color: white;
-    font-weight: 600;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
     font-size: 0.875rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-    background: #FA5c9e;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(249, 58, 139, 0.3);
-}
-
-.btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: transparent;
-    color: #94a3b8;
     font-weight: 500;
-    font-size: 0.875rem;
-    border-radius: 8px;
-    border: 1px solid var(--color-cyber-700);
+    border-radius: var(--radius);
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    line-height: 1.25;
+    user-select: none;
 }
 
+.btn:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Default (Primary) */
+.btn-primary, .btn-accent {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+}
+.btn-primary:hover, .btn-accent:hover {
+    background-color: hsl(var(--primary) / 0.9);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+/* Secondary */
+.btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border-color: hsl(var(--border));
+}
 .btn-secondary:hover {
-    background: var(--color-cyber-800);
-    color: white;
-    border-color: var(--color-cyber-600);
+    background-color: hsl(var(--secondary) / 0.8);
 }
 
-.btn-accent {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, var(--color-cyber-accent), var(--color-cyber-500));
-    color: white;
-    font-weight: 600;
+/* Ghost */
+.btn-ghost {
+    background-color: transparent;
+    color: hsl(var(--foreground));
+}
+.btn-ghost:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+/* Outline */
+.btn-outline {
+    background-color: transparent;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--input));
+}
+.btn-outline:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+/* Destructive */
+.btn-destructive {
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
+}
+.btn-destructive:hover {
+    background-color: hsl(var(--destructive) / 0.9);
+}
+
+/* Sizes */
+.btn-sm   { padding: 0.375rem 0.75rem;  font-size: 0.8125rem; }
+.btn-lg   { padding: 0.625rem 1.5rem;   font-size: 1rem; }
+.btn-icon { padding: 0.5rem; width: 2.25rem; height: 2.25rem; }
+
+/* ============================================
+   Form Elements — shadcn style
+   ============================================ */
+
+.input {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid hsl(var(--input));
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    color: hsl(var(--foreground));
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
 }
 
-.btn-accent:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(192, 51, 214, 0.3);
+.input::placeholder {
+    color: hsl(var(--muted-foreground));
+}
+
+.input:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
+}
+
+.input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    line-height: 1;
 }
 
 /* ============================================
-   Markdown Prose Styles
+   Badge
+   ============================================ */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.5;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+}
+
+.badge-default {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+.badge-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border-color: hsl(var(--border));
+}
+
+.badge-outline {
+    background-color: transparent;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+}
+
+.badge-destructive {
+    background-color: hsl(var(--destructive) / 0.15);
+    color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive) / 0.2);
+}
+
+.badge-success {
+    background-color: hsl(142 71% 45% / 0.15);
+    color: hsl(142 71% 35%);
+    border-color: hsl(142 71% 45% / 0.25);
+}
+
+.dark .badge-success {
+    color: hsl(142 71% 60%);
+}
+
+/* ============================================
+   Separator
+   ============================================ */
+
+.separator {
+    height: 1px;
+    background-color: hsl(var(--border));
+}
+
+/* ============================================
+   Sidebar
+   ============================================ */
+
+.sidebar {
+    background-color: hsl(var(--card));
+    border-right: 1px solid hsl(var(--border));
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.sidebar-nav-item:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+.sidebar-nav-item.active {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--foreground));
+    font-weight: 600;
+}
+
+/* ============================================
+   Tabs — shadcn style
+   ============================================ */
+
+.tabs-list {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: hsl(var(--muted));
+    border-radius: var(--radius);
+    padding: 0.25rem;
+}
+
+.tab-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    border: none;
+    background: none;
+}
+
+.tab-trigger:hover {
+    color: hsl(var(--foreground));
+}
+
+.tab-trigger.active {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes spin-slow {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+    70% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+}
+
+.animate-fade-in       { animation: fade-in 0.3s ease-out; }
+.animate-fade-in-up    { animation: fade-in-up 0.4s ease-out; }
+.animate-slide-in-right { animation: slide-in-right 0.3s ease-out; }
+.animate-pulse-ring    { animation: pulse-ring 2s ease-in-out infinite; }
+
+/* ============================================
+   Skeleton Loader
+   ============================================ */
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        hsl(var(--muted)) 25%,
+        hsl(var(--muted-foreground) / 0.1) 50%,
+        hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s linear infinite;
+    border-radius: var(--radius);
+}
+
+/* ============================================
+   Markdown prose (proposal/blueprint)
    ============================================ */
 
 .prose-architex h1,
 .prose-architex h2,
 .prose-architex h3,
 .prose-architex h4 {
-    color: #f1f5f9;
+    color: hsl(var(--foreground));
     font-weight: 700;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
 }
 
 .prose-architex p {
-    color: #94a3b8;
-    line-height: 1.75;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.8;
+    margin-bottom: 1em;
 }
 
 .prose-architex code {
-    color: var(--color-cyber-accent);
-    background: var(--color-cyber-800);
-    padding: 2px 6px;
-    border-radius: 4px;
+    color: hsl(var(--primary));
+    background: hsl(var(--muted));
+    padding: 0.125rem 0.375rem;
+    border-radius: calc(var(--radius) - 2px);
     font-size: 0.875em;
     font-family: var(--font-mono);
 }
 
 .prose-architex ul li {
-    color: #94a3b8;
+    color: hsl(var(--muted-foreground));
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .prose-architex strong {
-    color: #e2e8f0;
+    color: hsl(var(--foreground));
+    font-weight: 600;
+}
+
+.prose-architex blockquote {
+    border-left: 3px solid hsl(var(--primary));
+    padding-left: 1rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+}
+
+.prose-architex hr {
+    border-color: hsl(var(--border));
+    margin: 2rem 0;
+}
+
+/* ============================================
+   Progress bar
+   ============================================ */
+
+.progress {
+    height: 0.375rem;
+    background-color: hsl(var(--secondary));
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: hsl(var(--primary));
+    border-radius: 9999px;
+    transition: width 0.5s ease;
+}
+
+/* ============================================
+   Theme toggle
+   ============================================ */
+
+.theme-toggle {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--background));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: hsl(var(--muted-foreground));
+}
+
+.theme-toggle:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
 }
