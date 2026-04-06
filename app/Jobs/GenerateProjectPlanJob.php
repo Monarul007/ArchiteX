@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Ai\Workflows\Steps\GenerateBlueprint;
+use App\Ai\Workflows\Steps\GenerateMasterPlan;
 use App\Ai\Workflows\Steps\GenerateParallelEstimateAndProposal;
 use App\Ai\Workflows\Steps\GenerateTasks;
 use App\Models\Project;
@@ -68,6 +69,7 @@ class GenerateProjectPlanJob implements ShouldQueue
                     GenerateBlueprint::class,
                     GenerateParallelEstimateAndProposal::class,
                     GenerateTasks::class,
+                    GenerateMasterPlan::class,
                 ])
                 ->then(fn ($payload) => $payload);
 

@@ -98,6 +98,7 @@ class GenerateBlueprint
             'milestones' => $blueprintData['milestones'] ?? [],
             'roadmap' => $blueprintData['roadmap'] ?? [],
             'client_questions' => $blueprintData['clientQuestions'] ?? [],
+            'implementation_plan' => $blueprintData['implementationPlan'] ?? [],
             'reliability_score' => $reliabilityScore,
         ]);
 

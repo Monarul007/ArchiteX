@@ -6,7 +6,7 @@ import {
     Layers, FileText, CheckSquare, Users, 
     Maximize2, Download, RefreshCcw, Sparkles,
     ZoomIn, X, AlertCircle, Lightbulb, Shield,
-    Calendar, Flag, Briefcase, ChevronDown, ChevronUp, HelpCircle
+    Calendar, Flag, Briefcase, ChevronDown, ChevronUp, HelpCircle, FileCode
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import mermaid from 'mermaid';
@@ -173,7 +173,7 @@ interface ProjectProps {
 }
 
 export default function Show({ project, team, messages }: ProjectProps) {
-    const [activeTab, setActiveTab] = useState('blueprint');
+    const [activeTab, setActiveTab] = useState('implementation');
     const [isThinking, setIsThinking] = useState(false);
     const [selectedVersion, setSelectedVersion] = useState<number>(
         project.blueprints.length > 0 ? project.blueprints[0].version : 1
@@ -227,6 +227,18 @@ export default function Show({ project, team, messages }: ProjectProps) {
                 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
                 h1, h2, h3, h4, h5, h6, .font-outfit { font-family: 'Outfit', sans-serif !important; }
                 .blueprint-canvas svg { mix-blend-mode: screen !important; }
+                
+                /* Advanced Table Styles */
+                table { border-spacing: 0; width: 100%; border-radius: 1.5rem; overflow: hidden; }
+                th { background: rgba(38, 30, 46, 0.4); text-align: left; padding: 1rem 1.5rem !important; }
+                td { padding: 1.25rem 1.5rem !important; vertical-align: top; border-top: 1px solid rgba(38, 30, 46, 0.3); }
+                tr:last-child td { border-bottom: none; }
+                
+                /* Custom Scrollbar */
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(249, 58, 139, 0.2); border-radius: 20px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(249, 58, 139, 0.4); }
             ` }} />
             <Head title={`${project.title} - ArchiteX`} />
 
@@ -314,10 +326,10 @@ export default function Show({ project, team, messages }: ProjectProps) {
                     <nav className="flex items-center gap-3 mb-12 p-1.5 bg-[#15121a] rounded-[2rem] border border-[#261E2E] w-fit shadow-sm relative overflow-hidden group">
                         <div className="absolute inset-0 bg-[#F93A8B]/10/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         {[
+                            { id: 'implementation', label: 'Master Plan', icon: FileCode },
                             { id: 'blueprint', label: 'Architecture', icon: Layers },
                             { id: 'estimate', label: 'Estimations', icon: Clock },
                             { id: 'proposal', label: 'Proposal', icon: FileText },
-                            { id: 'roadmap', label: 'Evolution', icon: Calendar },
                             { id: 'tasks', label: 'Sync Board', icon: CheckSquare },
                             { id: 'team', label: 'Neural Team', icon: Users },
                         ].map((tab) => (
@@ -735,6 +747,345 @@ export default function Show({ project, team, messages }: ProjectProps) {
                                 </div>
                             </div>
                         )}
+                        {/* Master Plan View */}
+                        {activeTab === 'implementation' && (
+                            <div className="animate-fade-in space-y-24 max-w-6xl mx-auto pb-32">
+                                {blueprint.master_plan && typeof blueprint.master_plan === 'object' && !Array.isArray(blueprint.master_plan) ? (
+                                    <div className="space-y-32">
+                                        {/* 1. Overview Hero Section */}
+                                        <section className="relative group pt-10">
+                                            <div className="absolute -inset-20 bg-gradient-to-br from-[#F93A8B]/10 via-transparent to-cyan-500/5 blur-[120px] pointer-events-none opacity-40"></div>
+                                            <div className="relative z-10 text-center space-y-10">
+                                                <div className="flex justify-center gap-6 mb-4">
+                                                    <div className="px-6 py-2.5 bg-zinc-900 border border-[#261E2E] rounded-full text-[10px] uppercase font-black tracking-[0.3em] text-zinc-500 italic shadow-sm hover:border-[#F93A8B]/30 transition-all">ArchiteX Protocol v{blueprint.version}.0</div>
+                                                    <div className="px-6 py-2.5 bg-[#F93A8B]/10 border border-[#F93A8B]/20 rounded-full text-[10px] uppercase font-black tracking-[0.3em] text-[#F93A8B] italic shadow-lg">Lead: {blueprint.master_plan.overview.leadArchitect}</div>
+                                                </div>
+                                                <h1 className="text-7xl lg:text-9xl font-black text-white uppercase italic tracking-tighter leading-[0.9] drop-shadow-2xl">
+                                                    {blueprint.master_plan.overview.status}
+                                                </h1>
+                                                <div className="max-w-5xl mx-auto space-y-12">
+                                                    <div className="relative">
+                                                        <div className="absolute -left-12 -top-12 text-[#F93A8B]/20 font-black text-9xl italic select-none">"</div>
+                                                        <blockquote className="text-3xl lg:text-5xl text-zinc-300 font-bold italic leading-tight border-l-8 border-[#F93A8B] pl-12 py-6 mb-10 bg-zinc-900/40 rounded-r-[3rem] shadow-2xl backdrop-blur-md">
+                                                            {blueprint.master_plan.overview.vision}
+                                                        </blockquote>
+                                                    </div>
+                                                    <p className="text-2xl text-zinc-500 font-medium italic leading-relaxed max-w-4xl mx-auto border-l border-zinc-800 pl-10">
+                                                        {blueprint.master_plan.overview.missionBrief}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                        {/* 2. Strategy & Resource Breakdown */}
+                                        <section className="grid grid-cols-1 xl:grid-cols-12 gap-12 pt-20 border-t border-zinc-900">
+                                            <div className="xl:col-span-7 bg-[#15121a] p-16 rounded-[4rem] border border-[#261E2E] shadow-2xl relative overflow-hidden group">
+                                                <div className="absolute top-0 right-0 p-12 text-[#F93A8B]/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Sparkles className="w-32 h-32" />
+                                                </div>
+                                                <div className="relative z-10">
+                                                    <h3 className="text-3xl font-black text-white uppercase italic tracking-tight mb-12 flex items-center gap-6">
+                                                        <div className="w-12 h-1 bg-[#F93A8B]" />
+                                                        Neural Strategic Genesis
+                                                    </h3>
+                                                    <p className="text-zinc-300 text-xl leading-relaxed font-bold italic mb-16 border-l-2 border-[#F93A8B]/30 pl-10 bg-[#0f0c13]/50 py-8 rounded-r-3xl">
+                                                        {blueprint.master_plan.strategicVision}
+                                                    </p>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                                                        {blueprint.master_plan.bestPractices.map((bp: string, i: number) => (
+                                                            <div key={i} className="flex items-start gap-4 p-5 bg-[#0f0c13] border border-[#261E2E] rounded-2xl text-zinc-500 font-medium italic text-sm hover:border-[#F93A8B]/20 transition-all">
+                                                                <div className="w-2 h-2 rounded-full bg-[#F93A8B] mt-1.5 shadow-[0_0_12px_#F93A8B]" />
+                                                                {bp}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="xl:col-span-5 space-y-12">
+                                                <div className="bg-[#15121a] p-12 rounded-[4rem] border border-[#261E2E] shadow-2xl">
+                                                    <h3 className="text-2xl font-black text-white uppercase italic tracking-tight mb-10 flex items-center gap-4">
+                                                        <div className="w-10 h-1 bg-cyan-400" />
+                                                        Resource Commitment
+                                                    </h3>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                        {blueprint.master_plan.roleSummaries.map((role: any, i: number) => (
+                                                            <div key={i} className="bg-[#0f0c13] p-8 rounded-3xl border border-[#261E2E] hover:border-cyan-400/30 transition-all group relative overflow-hidden">
+                                                                <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-cyan-400/5 rounded-full blur-2xl group-hover:bg-cyan-400/10 transition-colors" />
+                                                                <div className="flex justify-between items-start mb-6">
+                                                                    <div className="p-3 bg-cyan-400/10 rounded-xl text-cyan-400 border border-cyan-400/20 group-hover:scale-110 transition-transform">
+                                                                        <Users className="w-5 h-5" />
+                                                                    </div>
+                                                                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic">{role.totalTasks} Units</span>
+                                                                </div>
+                                                                <h4 className="text-white font-black uppercase italic tracking-tight mb-1 text-sm">{role.role}</h4>
+                                                                <div className="text-3xl font-black text-white italic tracking-tighter">{role.totalHours}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-gradient-to-br from-[#15121a] to-[#0f0c13] p-12 rounded-[4rem] border border-[#261E2E] shadow-2xl space-y-8 relative overflow-hidden">
+                                                    <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-[#F93A8B]/5 rounded-full blur-3xl" />
+                                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Critical Infrastructure Dependencies</h4>
+                                                    <div className="flex flex-wrap gap-3 relative z-10">
+                                                        {blueprint.master_plan.dependencies.map((dep: string, i: number) => (
+                                                            <div key={i} className="px-5 py-3 bg-zinc-900/80 backdrop-blur-xl border border-[#261E2E] text-zinc-400 font-black italic rounded-2xl uppercase tracking-widest text-[9px] shadow-sm hover:text-[#F93A8B] hover:border-[#F93A8B]/40 transition-all group">
+                                                                <span className="text-[#F93A8B]/50 mr-2 group-hover:text-[#F93A8B]">#</span>
+                                                                {dep}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                        {/* 3. Architectural Modules Integration */}
+                                        <section className="space-y-16">
+                                            <div className="flex items-center gap-10">
+                                                <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+                                                <h2 className="text-5xl font-black text-white uppercase italic tracking-tight italic">Technical Domains</h2>
+                                                <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-32">
+                                                {blueprint.master_plan.modules.map((module: any, i: number) => (
+                                                    <div key={i} className={`grid grid-cols-1 lg:grid-cols-2 gap-20 items-center ${i % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
+                                                        <div className={`space-y-10 ${i % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
+                                                            <div className="space-y-4">
+                                                                <span className="text-[10px] font-black text-[#F93A8B] uppercase tracking-[0.5em] italic block">Neural Module Serialization</span>
+                                                                <h3 className="text-5xl font-black text-white uppercase italic tracking-tighter leading-none">{module.title}</h3>
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="px-8 py-3 bg-cyan-400/10 border border-cyan-400/20 rounded-full text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] italic shadow-lg inline-flex items-center gap-2">
+                                                                        <Layers className="w-3.5 h-3.5" />
+                                                                        {module.role}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="relative">
+                                                                <div className="absolute -left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-[#F93A8B] to-transparent opacity-40 rounded-full" />
+                                                                <p className="text-xl text-zinc-400 font-bold italic leading-relaxed pl-6">
+                                                                    {module.rationale}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className={`group ${i % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
+                                                            <div className="p-12 bg-[#15121a] rounded-[4rem] border border-[#261E2E] shadow-[0_30px_100px_rgba(0,0,0,0.3)] relative overflow-hidden active:scale-[0.98] transition-transform">
+                                                                <div className="absolute inset-0 bg-gradient-to-br from-[#F93A8B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                                <Mermaid chart={module.mermaidDiagram} title={`${module.title} System Logic`} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+
+                                        {/* 4. Synchronized Roadmap & Detailed Tasking */}
+                                        <section className="space-y-20 pt-32 border-t border-zinc-900">
+                                            <div className="text-center space-y-4">
+                                                <h2 className="text-6xl font-black text-white uppercase italic tracking-tighter">Synchronized Roadmap</h2>
+                                                <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic text-xs">High-Fidelity Evolution cycles v{blueprint.version}.1</p>
+                                            </div>
+                                            
+                                            <div className="space-y-40">
+                                                {blueprint.master_plan.milestones.map((milestone: any, i: number) => (
+                                                    <div key={i} className="relative">
+                                                        {i < blueprint.master_plan.milestones.length - 1 && (
+                                                            <div className="absolute left-1/2 top-full w-[2px] h-40 bg-gradient-to-b from-zinc-800 via-zinc-800 to-transparent border-l border-dashed border-[#F93A8B]/20" />
+                                                        )}
+                                                        <div className="bg-[#15121a] p-16 lg:p-24 rounded-[5rem] border border-[#261E2E] shadow-[0_45px_100px_rgba(0,0,0,0.2)] relative group overflow-hidden">
+                                                            <div className="absolute -right-16 -top-16 p-24 text-zinc-900 font-black text-[12rem] italic uppercase select-none opacity-20 pointer-events-none group-hover:text-[#F93A8B]/5 transition-colors">Phase {i+1}</div>
+                                                            
+                                                            <div className="relative z-10 flex flex-col xl:flex-row gap-20">
+                                                                <div className="xl:w-1/3 space-y-10">
+                                                                    <div className="space-y-4">
+                                                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] mb-4 block italic">Evolution Milestone Delta</span>
+                                                                        <h4 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">{milestone.title}</h4>
+                                                                        <div className="flex items-center gap-4 py-3 px-6 bg-[#0f0c13] border border-[#261E2E] rounded-2xl w-fit">
+                                                                            <Clock className="w-4 h-4 text-cyan-400" />
+                                                                            <span className="text-cyan-400 font-black italic uppercase text-[10px] tracking-widest">{milestone.duration} Commitment</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-zinc-400 font-bold italic leading-relaxed text-lg border-l-4 border-cyan-400 pl-8 bg-cyan-400/5 py-6 rounded-r-3xl">
+                                                                        {milestone.focus}
+                                                                    </p>
+                                                                </div>
+                                                                
+                                                                <div className="xl:w-2/3 overflow-hidden rounded-[3rem] border border-[#261E2E] bg-[#0f0c13] shadow-inner">
+                                                                    <table className="w-full text-left border-collapse">
+                                                                        <thead className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic bg-[#1a1523]">
+                                                                            <tr>
+                                                                                <th className="p-8">Domain</th>
+                                                                                <th className="p-8">Technical Unit Path</th>
+                                                                                <th className="p-8 text-center text-cyan-400">Flux</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody className="text-xs text-zinc-500 italic font-bold">
+                                                                            {milestone.tasks.map((task: any, ti: number) => (
+                                                                                <tr key={ti} className="border-t border-[#261E2E] hover:bg-[#F93A8B]/5 transition-colors group/row">
+                                                                                    <td className="p-8">
+                                                                                        <div className="flex flex-col gap-1">
+                                                                                            <span className="text-white font-black uppercase tracking-tight">{task.module}</span>
+                                                                                            <span className="text-[9px] uppercase tracking-widest text-[#F93A8B]/60">{task.role}</span>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td className="p-8 text-zinc-400 text-sm font-medium leading-relaxed group-hover/row:text-white transition-colors">{task.description}</td>
+                                                                                    <td className="p-8 text-white font-black italic text-center text-xl tracking-tighter bg-zinc-900/40">{task.time}</td>
+                                                                                </tr>
+                                                                            ))}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+                                        
+                                        {/* 5. Strategic Considerations Footer */}
+                                        <section className="bg-gradient-to-br from-[#15121a] to-[#0f0c13] p-20 rounded-[5rem] border border-rose-500/20 shadow-2xl relative overflow-hidden text-center space-y-12">
+                                            <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/5 rounded-full blur-[120px] pointer-events-none" />
+                                            <div className="space-y-4">
+                                                <div className="inline-flex p-4 bg-rose-500/10 rounded-full text-rose-500 mb-4 animate-pulse">
+                                                    <Shield className="w-10 h-10" />
+                                                </div>
+                                                <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter">Architectural Integrity Check</h3>
+                                                <p className="text-xl text-zinc-500 font-bold italic max-w-3xl mx-auto">
+                                                    The system has identified several critical considerations to ensure long-term stability and scalability of this version.
+                                                </p>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                                {blueprint.master_plan.considerations.map((consideration: string, i: number) => (
+                                                    <div key={i} className="flex items-start gap-4 p-8 bg-[#0f0c13] border border-[#261E2E] rounded-[2.5rem] text-left hover:border-rose-500/30 transition-all group">
+                                                        <AlertCircle className="w-6 h-6 text-rose-500 mt-1 shrink-0 group-hover:scale-110 transition-transform" />
+                                                        <span className="text-zinc-400 text-sm font-bold italic leading-relaxed">{consideration}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+                                    </div>
+                                ) : blueprint.implementation_plan ? (
+                                    <div className="grid grid-cols-1 gap-16">
+                                        {/* Fallback Legacy View */}
+                                        <section className="space-y-8">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-[1px] bg-amber-500/30" />
+                                                <h3 className="text-[10px] font-black uppercase text-amber-500 tracking-[0.4em] italic">User Review Required</h3>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {blueprint.implementation_plan.userReviewRequired?.map((item: string, i: number) => (
+                                                    <div key={i} className="flex items-start gap-4 p-6 bg-amber-500/5 border border-amber-500/10 rounded-[2rem] hover:bg-amber-500/10 transition-colors group">
+                                                        <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5 group-hover:scale-110 transition-transform" />
+                                                        <span className="text-sm text-zinc-400 font-bold italic leading-relaxed">{item}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+
+                                        {/* Proposed Changes */}
+                                        <section className="space-y-8">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-[1px] bg-[#F93A8B]/30" />
+                                                <h3 className="text-[10px] font-black uppercase text-[#F93A8B] tracking-[0.4em] italic">Architectural Mutations</h3>
+                                            </div>
+                                            <div className="space-y-6">
+                                                {blueprint.implementation_plan.proposedChanges?.map((change: any, i: number) => (
+                                                    <div key={i} className="bg-[#15121a] p-10 rounded-[3rem] border border-[#261E2E] shadow-sm relative group overflow-hidden">
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#F93A8B]/5 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                        <div className="flex flex-col lg:flex-row gap-10 relative z-10">
+                                                            <div className="lg:w-1/3">
+                                                                <span className="text-[10px] font-black text-[#F93A8B] uppercase tracking-[0.2em] mb-3 block italic">Component Pulse</span>
+                                                                <h4 className="text-xl font-black text-white uppercase italic mb-4 tracking-tight">{change.component}</h4>
+                                                                <div className="flex flex-wrap gap-2">
+                                                                    {change.files?.map((file: string, fi: number) => (
+                                                                        <div key={fi} className="px-3 py-1.5 bg-[#0f0c13] border border-[#261E2E] rounded-xl text-[9px] font-mono text-cyan-400 font-bold uppercase tracking-widest shadow-sm">
+                                                                            {file}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4 block italic">Mutation Logic</span>
+                                                                <p className="text-sm text-zinc-400 leading-relaxed font-bold italic border-l-4 border-[#261E2E] pl-8 py-4">
+                                                                    {change.description}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t border-[#261E2E]">
+                                            {/* Open Questions */}
+                                            <section className="space-y-8">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-[1px] bg-cyan-500/30" />
+                                                    <h3 className="text-[10px] font-black uppercase text-cyan-500 tracking-[0.4em] italic">Neural Uncertainties</h3>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    {blueprint.implementation_plan.openQuestions?.map((q: string, i: number) => (
+                                                        <div key={i} className="flex items-start gap-4 p-6 bg-cyan-500/5 border border-cyan-500/10 rounded-[2rem] hover:border-cyan-500/30 transition-all group">
+                                                            <HelpCircle className="w-5 h-5 text-cyan-500 mt-1 shrink-0 group-hover:rotate-12 transition-transform" />
+                                                            <p className="text-sm text-zinc-400 font-bold italic">{q}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </section>
+
+                                            {/* Verification Plan */}
+                                            <section className="space-y-8">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-[1px] bg-emerald-500/30" />
+                                                    <h3 className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.4em] italic">Integrity Verification</h3>
+                                                </div>
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-[0.2em] mb-4 block italic">Automated Neural Tests</span>
+                                                        <ul className="space-y-3">
+                                                            {blueprint.implementation_plan.verificationPlan?.automatedTests?.map((test: string, i: number) => (
+                                                                <li key={i} className="flex items-center gap-4 text-xs text-zinc-500 font-bold italic">
+                                                                    <Shield className="w-4 h-4 text-emerald-500/40" />
+                                                                    {test}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                    <div className="pt-4 border-t border-emerald-500/10">
+                                                        <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-[0.2em] mb-4 block italic">Manual Sync Checks</span>
+                                                        <div className="grid grid-cols-1 gap-3">
+                                                            {blueprint.implementation_plan.verificationPlan?.manualVerification?.map((check: string, i: number) => (
+                                                                <div key={i} className="flex items-center gap-4 p-4 bg-[#0f0c13] border border-[#261E2E] rounded-2xl group hover:border-emerald-500/20 transition-all">
+                                                                    <CheckSquare className="w-4 h-4 text-[#F93A8B] group-hover:text-emerald-500 transition-colors" />
+                                                                    <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest italic">{check}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center min-h-[500px] text-center space-y-12 py-20 bg-[#15121a] rounded-[4rem] border border-[#261E2E] relative overflow-hidden">
+                                        <div className="absolute -inset-20 bg-gradient-to-br from-[#F93A8B]/5 via-transparent to-cyan-500/5 blur-[120px] pointer-events-none opacity-40"></div>
+                                        <div className="relative">
+                                            <div className="w-32 h-32 rounded-full border-8 border-[#F93A8B]/10 border-t-[#F93A8B] animate-spin" />
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <Sparkles className="w-10 h-10 text-[#F93A8B] animate-pulse" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-6 max-w-xl relative z-10">
+                                            <h2 className="text-4xl font-black text-white italic uppercase tracking-tight leading-none">Neural Core Synthesis Pending</h2>
+                                            <p className="text-zinc-500 leading-relaxed italic font-bold text-lg">
+                                                The ArchiteX Master Plan logic has been upgraded to a high-fidelity structured output model. <br/>
+                                                <span className="text-[#F93A8B]/80 italic mt-4 block underline decoration-dashed">Simply ask the Neural Assistant to "Refresh my Master Plan" to generate your next-gen technical roadmap.</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Roadmap Tab */}
                         {activeTab === 'roadmap' && (
@@ -799,7 +1150,7 @@ export default function Show({ project, team, messages }: ProjectProps) {
                                         </div>
                                         <h3 className="font-black text-2xl text-white uppercase italic tracking-tight">Granular Phase Units</h3>
                                     </div>
-
+                                    
                                     <div className="grid grid-cols-1 gap-12 relative before:absolute before:left-[15px] before:top-4 before:bottom-4 before:w-1 before:bg-[#1a1523] before:rounded-full">
                                         {blueprint.milestones?.map((milestone: any, mIndex: number) => {
                                             const milestoneTasks = tasks.filter((t: any) => t.milestone_index === mIndex);

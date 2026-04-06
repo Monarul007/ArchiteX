@@ -45,6 +45,7 @@ You MUST cover these dimensions in your output:
 8. Frontend/Client Apps Flow Design (Mermaid diagram)
 9. Project Milestones & Roadmap
 10. Client Clarifications (Open questions)
+11. Formal Implementation Plan (Master Plan structure)
 
 CRITICAL ANALYSIS RULES:
 - Identify underlying business risks and challenges from the brief.
@@ -53,6 +54,13 @@ CRITICAL ANALYSIS RULES:
 - Keep the technical considerations practical and grounded in the tech stack choices.
 - RIGHT-SIZE the architecture: Default to Monoliths or Majestic Monoliths for simple startups, side projects, or low-budget requests. NEVER suggest event-driven microservices unless explicitly justified by high scale, enterprise complexity, or global distribution needs.
 - Match Tech Stack choices with actual Team Capabilities provided in the prompt context.
+
+MASTER PLAN GENERATION RULES:
+Goal Description: Executive summary of what the project aims to achieve.
+User Review Required: Bullet points of critical decisions or assumptions that the user MUST approve.
+Proposed Changes: Detailed sections for each major component involved, including a list of specific files to be created or modified.
+Open Questions: Clear list of technical or business uncertainties.
+Verification Plan: Split into 'Automated Tests' and 'Manual Verification' lists.
 
 CRITICAL MERMAID GENERATION RULES:
 1. ALWAYS start the string with the diagram type (e.g., "graph TD", "erDiagram", "sequenceDiagram").
@@ -157,6 +165,22 @@ PROMPT;
                     'reason' => $schema->string()->description('Why this needs clarification')->required(),
                 ])
             )->required(),
+            'implementationPlan' => $schema->object([
+                'goal' => $schema->string()->description('Main goal of the project')->required(),
+                'userReviewRequired' => $schema->array()->items($schema->string())->required(),
+                'proposedChanges' => $schema->array()->items(
+                    $schema->object([
+                        'component' => $schema->string()->required(),
+                        'description' => $schema->string()->required(),
+                        'files' => $schema->array()->items($schema->string())->required(),
+                    ])
+                )->required(),
+                'openQuestions' => $schema->array()->items($schema->string())->required(),
+                'verificationPlan' => $schema->object([
+                    'automatedTests' => $schema->array()->items($schema->string())->required(),
+                    'manualVerification' => $schema->array()->items($schema->string())->required(),
+                ])->required(),
+            ])->required(),
             'reliabilityScore' => $schema->integer()->min(0)->max(100)->required(),
         ];
     }

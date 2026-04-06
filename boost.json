@@ -1,6 +1,9 @@
 {
     "agents": [
-        "gemini"
+        "claude_code",
+        "cursor",
+        "gemini",
+        "copilot"
     ],
     "guidelines": true,
     "mcp": true,

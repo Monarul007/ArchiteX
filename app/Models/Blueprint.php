@@ -22,6 +22,8 @@ class Blueprint extends Model
         'milestones',
         'roadmap',
         'client_questions',
+        'implementation_plan',
+        'master_plan',
         'reliability_score',
     ];
 
@@ -35,6 +37,8 @@ class Blueprint extends Model
         'milestones' => 'array',
         'roadmap' => 'array',
         'client_questions' => 'array',
+        'implementation_plan' => 'array',
+        'master_plan' => 'array',
     ];
 
     public function project()
