@@ -1466,10 +1466,12 @@ export default function Show({ project, team, messages }: ProjectProps) {
                                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 italic">Sync Established</span>
                                                 </div>
                                                 <p className="text-zinc-400 leading-relaxed font-bold italic">
-                                                    "{parsedContent.overview || 'Architecture synchronized successfully.'}"
+                                                    "{typeof parsedContent.overview === 'object' ? (parsedContent.strategicVision || parsedContent.overview.vision) : (parsedContent.overview || 'Architecture synchronized successfully.')}"
                                                 </p>
                                                 <div className="flex flex-wrap gap-2 text-[10px]">
-                                                    <span className="px-3 py-1 rounded-lg bg-[#F93A8B]/10 text-[#F93A8B] border border-[#F93A8B]/20 font-black uppercase tracking-widest italic">Reliability: {parsedContent.reliabilityScore}%</span>
+                                                    {parsedContent.reliabilityScore && (
+                                                        <span className="px-3 py-1 rounded-lg bg-[#F93A8B]/10 text-[#F93A8B] border border-[#F93A8B]/20 font-black uppercase tracking-widest italic">Reliability: {parsedContent.reliabilityScore}%</span>
+                                                    )}
                                                     <span className="px-3 py-1 rounded-lg bg-[#0f0c13] text-zinc-500 border border-[#261E2E] font-black uppercase tracking-widest italic">v{blueprint.version}.0</span>
                                                 </div>
                                             </div>

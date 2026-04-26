@@ -20,7 +20,7 @@ use Laravel\Ai\Providers\Tools\WebSearch;
 use Stringable;
 
 #[Provider([Lab::Gemini, Lab::xAI, Lab::Groq])]
-#[Model('gemini-2.5-flash')]
+#[Model('gemini-1.5-flash')]
 #[Timeout(180)]
 class BlueprintAgent implements Agent, Conversational, HasMiddleware, HasStructuredOutput, HasTools
 {

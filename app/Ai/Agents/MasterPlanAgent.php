@@ -46,32 +46,33 @@ PROMPT;
                 'vision' => $schema->string()->required(),
                 'missionBrief' => $schema->string()->required(),
             ])->required(),
-            'bestPractices' => $schema->array($schema->string())->required(),
-            'modules' => $schema->array($schema->object([
+            'bestPractices' => $schema->array()->items($schema->string())->required(),
+            'modules' => $schema->array()->items($schema->object([
                 'title' => $schema->string()->required(),
                 'rationale' => $schema->string()->required(),
                 'role' => $schema->string()->required(),
                 'mermaidDiagram' => $schema->string()->required(),
             ]))->required(),
-            'milestones' => $schema->array($schema->object([
+            'milestones' => $schema->array()->items($schema->object([
                 'title' => $schema->string()->required(),
                 'focus' => $schema->string()->required(),
                 'duration' => $schema->string()->required(),
-                'tasks' => $schema->array($schema->object([
+                'tasks' => $schema->array()->items($schema->object([
                     'module' => $schema->string()->required(),
                     'description' => $schema->string()->required(),
                     'time' => $schema->string()->required(),
                     'role' => $schema->string()->required(),
                 ]))->required(),
             ]))->required(),
-            'roleSummaries' => $schema->array($schema->object([
+            'roleSummaries' => $schema->array()->items($schema->object([
                 'role' => $schema->string()->required(),
                 'totalTasks' => $schema->integer()->required(),
                 'totalHours' => $schema->string()->required(),
             ]))->required(),
-            'dependencies' => $schema->array($schema->string())->required(),
+            'dependencies' => $schema->array()->items($schema->string())->required(),
             'strategicVision' => $schema->string()->required(),
-            'considerations' => $schema->array($schema->string())->required(),
+            'considerations' => $schema->array()->items($schema->string())->required(),
+            'reliabilityScore' => $schema->integer()->min(0)->max(100)->required(),
         ];
     }
 
