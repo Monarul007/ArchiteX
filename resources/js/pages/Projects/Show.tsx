@@ -308,14 +308,27 @@ export default function Show({ project, team, messages }: ProjectProps) {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <button className="btn-secondary py-1.5 px-3">
+                            {project.status !== 'planning' && (
+                                <button
+                                    onClick={() => router.post(route('projects.auto-assign', project.id))}
+                                    className="btn-accent py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider"
+                                >
+                                    <Zap className="w-4 h-4" />
+                                    Auto Assign Tasks
+                                </button>
+                            )}
+                            <a href={route('projects.export.pdf', project.id)} target="_blank" rel="noreferrer" className="btn-secondary py-1.5 px-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
                                 <Download className="w-4 h-4" />
-                                Export PDF
-                            </button>
+                                PDF
+                            </a>
+                            <a href={route('projects.export.excel', project.id)} target="_blank" rel="noreferrer" className="btn-secondary py-1.5 px-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                <Download className="w-4 h-4" />
+                                Excel
+                            </a>
                             <div className="w-12 h-12 rounded-full bg-[#0f0c13] flex items-center justify-center border-2 border-white shadow-xl shadow-[#000]/20 overflow-hidden">
                                 <Users className="w-5 h-5 text-[#F93A8B]" />
                             </div>
-                    </div>
+                        </div>
                 </div>
             </div>
 

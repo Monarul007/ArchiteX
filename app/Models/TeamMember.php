@@ -28,4 +28,9 @@ class TeamMember extends Model
     {
         return $this->hasMany(Task::class, 'assigned_to');
     }
+
+    public function activities()
+    {
+        return $this->hasMany(TeamActivity::class);
+    }
 }

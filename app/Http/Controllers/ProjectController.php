@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\GenerateProjectPlanJob;
 use App\Models\Project;
 use App\Models\TeamMember;
+use App\Services\ResourceAllocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -92,5 +93,18 @@ class ProjectController extends Controller
         );
 
         return back();
+    }
+
+    public function autoAssignTasks(Project $project, ResourceAllocationService $allocationService)
+    {
+        $result = $allocationService->autoAssignTasks($project->id);
+
+        if ($result['assigned'] > 0) {
+            return back()->with('success', "Successfully assigned {$result['assigned']} tasks automatically.");
+        } elseif ($result['unassigned'] > 0) {
+            return back()->with('warning', "Could not automatically assign {$result['unassigned']} tasks. Check team availability and skills.");
+        }
+
+        return back()->with('info', 'No unassigned tasks found.');
     }
 }

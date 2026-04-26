@@ -66,12 +66,12 @@ export default function Dashboard({ projects }: Props) {
                     <Zap className="text-white w-6 h-6" />
                 </div>
                 <div className="space-y-8 flex-1">
-                    <button className="p-3 rounded-xl bg-[#F93A8B]/10 text-[#F93A8B] border border-[#F93A8B]/20 shadow-inner shadow-[#F93A8B]/10">
+                    <Link href={route('dashboard')} className="p-3 rounded-xl bg-[#F93A8B]/10 text-[#F93A8B] border border-[#F93A8B]/20 shadow-inner shadow-[#F93A8B]/10 block">
                         <Layout className="w-6 h-6" />
-                    </button>
-                    <button className="p-3 rounded-xl text-zinc-500 hover:text-zinc-200 transition-colors">
+                    </Link>
+                    <Link href={route('team-members.index')} className="p-3 rounded-xl text-zinc-500 hover:text-zinc-200 transition-colors block">
                         <User className="w-6 h-6" />
-                    </button>
+                    </Link>
                 </div>
                 
                 <button 
